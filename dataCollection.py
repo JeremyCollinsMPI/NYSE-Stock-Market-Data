@@ -182,7 +182,7 @@ def writeTableWithCompanyNamesVersion2(filenames, filename2):
 		print m
 		file.write(m)
 
-if name == "__main__":
+if __name__ == "__main__":
 	sectors = ["utilities", "healthcare", "services", "basic_materials", "conglomerates", "industrial_goods", "consumer_goods", "technology"]
 	for sector in sectors:
 		do(sector, 975, sector+'.txt')
