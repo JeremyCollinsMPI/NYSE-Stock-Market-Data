@@ -127,11 +127,66 @@ def findGraph(company):
 	ac.move_to_element(elem).move_by_offset(5, 10).perform()
 	time.sleep(10)	
 	driver.save_screenshot("1.png")
+def combineFiles(filenames):	
+	result = ''
+	for filename in filenames:
+		result = result + open(filename,'r').read()
+	return result.replace('START\n','')
+
+def generateTableWithCompanyNames(filename):
+	file = open(filename, 'r').readlines()
+	table=[]
+	company=''
+	for n in xrange(len(file)):
+		line=file[n]
+		print n
+		if 'COMPANY:' in line:
+			company = line.replace('COMPANY:','').replace('\n','')
+		else:
+			if not 'START' in line and not line=='\n':
+				line = line.replace('\n','') + company +'\n'
+				print line
+				table.append(line)
+	table.sort(key = lambda x:int(x.split('\t')[0]))
+	return table
+
+def writeTableWithCompanyNames(filename1, filename2):
+	file = open(filename2, 'w')
+	table = generateTableWithCompanyNames(filename1)
+	for m in table:
+		file.write(m)
+
+def generateTableWithCompanyNamesVersion2(file):
+	file=file.split('\n')
+	table=[]
+	company=''
+	for n in xrange(len(file)):
+# 		print n
+		if 'COMPANY:' in file[n]:
+			company = file[n].replace('COMPANY:','').replace('\n','')
+		else:
+			if not 'START' in file[n]:
+				line = file[n].replace('\n','') + company +'\n'
+				if len(line.split('\t')) < 2:
+					print 'moose'
+					print n
+				table.append(line)
+	table.sort(key = lambda x:int(x.split('\t')[0]))
+	return table
+		
+def writeTableWithCompanyNamesVersion2(filenames, filename2):
+	file = open(filename2, 'w')
+	text = combineFiles(filenames)
+	table = generateTableWithCompanyNamesVersion2(text)
+	for m in table:
+		print m
+		file.write(m)
 
 if name == "__main__":
 	sectors = ["utilities", "healthcare", "services", "basic_materials", "conglomerates", "industrial_goods", "consumer_goods", "technology"]
 	for sector in sectors:
 		do(sector, 975, sector+'.txt')
+	writeTableWithCompanyNamesVersion2(['financial.txt','technology.txt','industrial_goods.txt','services.txt','utilities.txt','basic_materials.txt','consumer_goods.txt','conglomerates.txt'],'combined.txt')
 
 
 	
