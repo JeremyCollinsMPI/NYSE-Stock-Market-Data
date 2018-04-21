@@ -7,9 +7,6 @@ import ast
 import unicodedata
 from selenium.webdriver.common.action_chains import ActionChains
 
-ts = int(time.time())
-print ts
-
 def returnPageSource(name, driver=webdriver.Chrome("./chromedriver"), timeLimit=5):
 	for i in range(0,timeLimit) :
 		try:
@@ -47,11 +44,6 @@ def listCompanies(x, driver):
 	return results
 
 def findAllOnPage(x, file, driver):
-# 	hrefs = x.split('href="')
-# 	hrefs = [x.split('"')[0] for x in hrefs]
-# 	hrefs = [x for x in hrefs if "/quote/" in x]
-# 	for member in hrefs:
-# 		member = member.split("quote/")[1].split("?")[0]
 	hrefs = listCompanies(x, driver)
 	for member in hrefs:
 		if not '^' in member and not '=' in member:
@@ -85,13 +77,7 @@ def do(sector, limit, filename):
 		except:
 			break
 
-string='financial'
-do(string, 975, string+'.txt')
-
-# done: utilities, healthcare, services, basic_materials, conglomerates, industrial_goods, consumer_goods, technology
-
-def getCash(company, driver):
-	
+def getCash(company, driver):	
 	driver.get("https://finance.yahoo.com/quote/" + company + "/key-statistics?p=" + company)
 	x = driver.page_source
 	x = x.split('"totalCash":')[1]
@@ -101,8 +87,6 @@ def getCash(company, driver):
 	y = ast.literal_eval(x)
 	print y
 	return y["raw"]
-
-
 
 def getTotalCash(sector, limit, filename):
 	driver = webdriver.Chrome("./chromedriver")
@@ -132,92 +116,23 @@ def getTotalCash(sector, limit, filename):
 	for member in companiesCash:
 		file.write('\n' + member + '\t' + str(companiesCash[member]))
 
-
-# getTotalCash('basic', 500, 'basicCash.txt')
-
 def findGraph(company):
 	driver = webdriver.Chrome("./chromedriver")
-# 	driver.get("https://finance.yahoo.com/quote/"+company+"?p="+company)
 	driver.get("https://finance.yahoo.com/chart/" + company + "#eyJpbnRlcnZhbCI6ImRheSIsInBlcmlvZGljaXR5IjoxLCJ0aW1lVW5pdCI6bnVsbCwiY2FuZGxlV2lkdGgiOjgsInZvbHVtZVVuZGVybGF5IjpmYWxzZSwiYWRqIjp0cnVlLCJjcm9zc2hhaXIiOnRydWUsImNoYXJ0VHlwZSI6ImxpbmUiLCJleHRlbmRlZCI6ZmFsc2UsIm1hcmtldFNlc3Npb25zIjp7fSwiYWdncmVnYXRpb25UeXBlIjoib2hsYyIsImNoYXJ0U2NhbGUiOiJsaW5lYXIiLCJwYW5lbHMiOnsiY2hhcnQiOnsicGVyY2VudCI6MSwiZGlzcGxheSI6IkdVVCIsImNoYXJ0TmFtZSI6ImNoYXJ0IiwidG9wIjowfX0sInNldFNwYW4iOnt9LCJsaW5lV2lkdGgiOjIsInN0cmlwZWRCYWNrZ3JvdWQiOnRydWUsImV2ZW50cyI6dHJ1ZSwiY29sb3IiOiIjMDA4MWYyIiwic3ltYm9scyI6W3sic3ltYm9sIjoiR1VUIiwic3ltYm9sT2JqZWN0Ijp7InN5bWJvbCI6IkdVVCJ9LCJwZXJpb2RpY2l0eSI6MSwiaW50ZXJ2YWwiOiJkYXkiLCJ0aW1lVW5pdCI6bnVsbCwic2V0U3BhbiI6e319XX0%3D")
 	x = driver.page_source
-# 	driver.findElements(By.xpath(
 	print x
 	elem = driver.find_element_by_id("fin-chartiq")
 	print elem
 	ac = ActionChains(driver)
 	ac.move_to_element(elem).move_by_offset(5, 10).perform()
-	time.sleep(10)
-	
+	time.sleep(10)	
 	driver.save_screenshot("1.png")
-# 	ac.move_to_element(elem).move_by_offset(10, 10).perform()
-# 	driver.save_screenshot("2.png")
-# 	driver.close()
-# findGraph("HSBC")
+
+if name == "__main__":
+	sectors = ["utilities", "healthcare", "services", "basic_materials", "conglomerates", "industrial_goods", "consumer_goods", "technology"]
+	for sector in sectors:
+		do(sector, 975, sector+'.txt')
 
 
-
-# def findHistoricalData(name, driver):
-# 	x = returnPageSource(name, driver)
-# 	x = unicodedata.normalize('NFKD', x).encode('ascii','ignore')
-# 	x = x.split('<span data-reactid="')	
-# 	x = [y.split('>')[1] for y in x]
-# 	x = [y.split('<')[0] for y in x]
-# 	x = x[x.index('Volume')+1:(x.index('*Close price adjusted for splits.'))]
-# 	return x
-# 
-# months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-
-
-# def findAllOnPage(x, file, driver):
-# 	hrefs = x.split('href="')
-# 	hrefs = [x.split('"')[0] for x in hrefs]
-# 	hrefs = [x for x in hrefs if "/quote/" in x]
-# 	for member in hrefs:
-# 		member = member.split("quote/")[1].split("?")[0]
-# 		results = findHistoricalData(member,driver)
-# 		file.write('\n'+member)
-# 		for o in xrange(len(results)):
-# 			member2 = results[o]
-# 			member21 = ''
-# 			try:
-# 				member21=results[o+1]
-# 			except:
-# 				pass
-# 			if not 'Dividend' in member2 and not 'Dividend' in member21:
-# 				try:
-# 					yourdate = dateutil.parser.parse(member2)
-# 					if member2[0:3] in months:
-# 						file.write('\n')	
-# 				except:
-# 					pass				
-# 				file.write(member2+'\t')
-
-
-
-# print x
-
-
-# print hrefs
-# findHistoricalData(sample, driver)
-
-# driver.get("https://finance.yahoo.com/quote/V/history?p=V")
-
-
-# sample="BLK"
-
-# driver.find_element_by_link_text(sample).send_keys('\n')
-
-
-# driver.get("http://www.facebook.com")
-# time.sleep(5)
-# subprocess.call("/Users/jeremycollins/test.command",shell=True)
-
-# driver.get("https://finance.yahoo.com/quote/FB2A.DE/history?p=FB2A.DE")
-
-# driver.find_element_by_link_text("Download Data").click()
-
-# 	driver.find_element_by_link_text(name).send_keys('\n')
-# 	print driver.page_source
-# 	driver.find_element_by_link_text("Historical Data").click()
 	
 
